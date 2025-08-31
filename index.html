@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💖 Untuk Cinta Hatiku</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Pacifico&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            overflow-x: hidden;
+            color: white;
+            cursor: none;
+        }
+        
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ff69b4, #ff1493);
+            border-radius: 50%;
+            pointer-events: none;
+            mix-blend-mode: difference;
+            z-index: 9999;
+            transition: transform 0.1s;
+        }
+        
+        .canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 105, 180, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(199, 21, 133, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 20, 147, 0.6) 0%, transparent 50%),
+                linear-gradient(135deg, #000 0%, #1a0012 50%, #000 100%);
+            z-index: -2;
+        }
+        
+        .container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            z-index: 1;
+        }
+        
+        .love-card {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(25px);
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #ff69b4, #ff1493, #c71585) 1;
+            border-radius: 30px;
+            padding: 4rem 3rem;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 
+                0 0 60px rgba(255, 105, 180, 0.3),
+                inset 0 0 60px rgba(255, 105, 180, 0.1);
+            transform: translateY(50px);
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .love-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, #ff69b4, transparent);
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+        
+        .love-card::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 28px;
+            z-index: -1;
+        }
+        
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+        
+        .main-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff69b4, #ff1493, #c71585, #ff69b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 40px rgba(255, 105, 180, 0.8);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px #ff69b4); }
+            to { filter: drop-shadow(0 0 25px #ff1493); }
+        }
+        
+        .message-container {
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .romantic-message {
+            font-size: 1.4rem;
+            line-height: 2;
+            color: #ffcccb;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            font-weight: 400;
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .romantic-message.special {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #ff69b4;
+            font-weight: 600;
+        }
+        
+        .love-button {
+            background: linear-gradient(135deg, #ff1493, #c71585, #ff69b4);
+            border: none;
+            color: white;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 60px;
+            cursor: pointer;
+            margin: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 10px 40px rgba(255, 105, 180, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .love-button:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 
+                0 20px 60px rgba(255, 105, 180, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .love-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.8s;
+        }
+        
+        .love-button:hover::before {
+            left: 100%;
+        }
+        
+        .love-letter {
+            background: rgba(255, 20, 147, 0.1);
+            border: 2px solid rgba(255, 105, 180, 0.4);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 3rem;
+            opacity: 0;
+            transform: scale(0.9);
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.2);
+        }
+        
+        .love-letter h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #ff69b4;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .love-letter p {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #ffb6c1;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .countdown-container {
+            margin: 3rem 0;
+            opacity: 0;
+        }
+        
+        .countdown {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem;
+            color: #ff69b4;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.8);
+            margin-bottom: 2rem;
+        }
+        
+        .heart-explosion {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .floating-heart {
+            position: absolute;
+            font-size: 2rem;
+            color: #ff69b4;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .music-note {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #ff1493;
+            opacity: 0;
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff69b4;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid #ff69b4;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #ff69b4 }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .love-card { padding: 2rem; }
+            .main-title { font-size: 2.5rem; }
+            .romantic-message { font-size: 1.1rem; }
+        }
+        
+        .final-message {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #ff69b4;
+            text-align: center;
+            margin: 3rem 0;
+            opacity: 0;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+        }
+        
+        .promise-box {
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(199, 21, 133, 0.1));
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="canvas-container" id="canvas"></div>
+    <div class="gradient-bg"></div>
+    <div class="heart-explosion" id="heartExplosion"></div>
+    
+    <div class="container">
+        <div class="love-card" id="loveCard">
+            <h1 class="main-title">Untuk Cinta Hatiku 💖</h1>
+            
+            <div class="message-container">
+                <div class="romantic-message" id="msg1">
+                    Aku tidak sempurna, aku membuat kesalahan, aku menyakitimu. Tetapi ketika aku meminta maaf, aku bersungguh-sungguh.
+                </div>
+                
+                <div class="romantic-message hidden" id="msg2">
+                    Maafkan aku, Sayang. Aku tahu aku membuatmu kecewa. Aku minta maaf atas kesalahan yang telah aku buat. Aku berharap kamu bisa memaafkanku.
+                </div>
+                
+                <div class="romantic-message special hidden" id="msg3">
+                    Hati kecilku tak tega melihatmu sedih. Tolong maafkan aku, dan marilah kita membangun hubungan yang lebih baik.
+                </div>
+                
+                <div class="romantic-message hidden" id="msg4">
+                    Aku sangat menyesal telah menyakiti hatimu. Aku berjanji akan lebih baik lagi.
+                </div>
+            </div>
+            
+            <button class="love-button" id="btn1">💌 Baca Surat Cintaku</button>
+            <button class="love-button hidden" id="btn2">✨ Lihat Keajaiban</button>
+            <button class="love-button hidden" id="btn3">💕 Terima Maafku</button>
+            
+            <div class="countdown-container hidden" id="countdownContainer">
+                <div class="countdown" id="countdown"></div>
+            </div>
+            
+            <div class="love-letter hidden" id="loveLetter">
+                <h2>Surat Cinta Terindah Untukmu 💝</h2>
+                <p>Inilah kata-kata yang paling penting dalam hidupku saat ini: Aku mencintaimu, kamu sangat penting dalam hidupku, kumohon maafkan aku.</p>
+                <p>Maafkan aku, Sayang, dan biarkan aku membuktikan padamu betapa aku mencintaimu.</p>
+                <p>Aku mengabaikan kebahagiaanmu dalam upaya untuk membuat diriku bahagia, hanya untuk menyadari bahwa kebahagiaanku ada padamu. Maaf, maafkan aku sayang.</p>
+                <p>Aku berjanji kepadamu bahwa mulai sekarang hubungan kita akan bebas dari air mata, kebohongan, dan penghinaan. Aku mencintaimu, mari kita tetap bersama.</p>
+                
+                <div class="promise-box" id="promiseBox">
+                    <p><strong>Janjiku Untukmu:</strong></p>
+                    <p>• Aku akan lebih memperhatikan perasaanmu</p>
+                    <p>• Aku akan selalu mengutamakan kamu</p>
+                    <p>• Aku akan jadi pacar yang lebih baik</p>
+                    <p>• Aku akan selalu mencintaimu dengan tulus</p>
+                </div>
+            </div>
+            
+            <div class="final-message hidden" id="finalMessage">
+                I Love You So Much, My Beautiful Angel 👸✨
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+        });
+        
+        // 3D Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas').appendChild(renderer.domElement);
+        
+        // Create 3D hearts with better geometry
+        const heartGeometry = new THREE.BufferGeometry();
+        const heartVertices = [];
+        
+        for (let i = 0; i < 100; i++) {
+            const t = (i / 100) * Math.PI * 2;
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+            heartVertices.push(x/10, y/10, 0);
+        }
+        
+        heartGeometry.setAttribute('position', new THREE.Float32BufferAttribute(heartVertices, 3));
+        
+        const hearts3D = [];
+        for (let i = 0; i < 30; i++) {
+            const material = new THREE.PointsMaterial({
+                color: new THREE.Color().setHSL(0.9 + Math.random() * 0.1, 0.8, 0.6),
+                size: Math.random() * 3 + 1,
+                transparent: true,
+                opacity: 0.7
+            });
+            
+            const heart = new THREE.Points(heartGeometry, material);
+            heart.position.set(
+                Math.random() * 1000 - 500,
+                Math.random() * 1000 - 500,
+                Math.random() * 1000 - 500
+            );
+            heart.scale.setScalar(Math.random() * 2 + 1);
+            scene.add(heart);
+            hearts3D.push(heart);
+        }
+        
+        camera.position.z = 300;
+        
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            hearts3D.forEach((heart, index) => {
+                heart.rotation.x += 0.01;
+                heart.rotation.y += 0.005;
+                heart.position.y -= 1;
+                if (heart.position.y < -500) heart.position.y = 500;
+            });
+            renderer.render(scene, camera);
+        }
+        animate3D();
+        
+        // Advanced particle system
+        function createMagicalEffect() {
+            const effects = ['💖', '💕', '💝', '💘', '❤️', '🌸', '✨', '⭐', '💫', '🌙'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'floating-heart';
+                    particle.innerHTML = effects[Math.floor(Math.random() * effects.length)];
+                    particle.style.left = Math.random() * window.innerWidth + 'px';
+                    particle.style.top = window.innerHeight + 'px';
+                    particle.style.fontSize = (Math.random() * 30 + 15) + 'px';
+                    document.getElementById('heartExplosion').appendChild(particle);
+                    
+                    gsap.to(particle, {
+                        y: -window.innerHeight - 100,
+                        x: (Math.random() - 0.5) * 300,
+                        rotation: Math.random() * 720,
+                        opacity: 1,
+                        duration: Math.random() * 4 + 3,
+                        ease: 'none',
+                        onComplete: () => particle.remove()
+                    });
+                    
+                    gsap.to(particle, {
+                        opacity: 0,
+                        duration: 1,
+                        delay: Math.random() * 2 + 2
+                    });
+                }, i * 100);
+            }
+        }
+        
+        function createSparkles() {
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * window.innerWidth + 'px';
+                sparkle.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(sparkle);
+                
+                gsap.fromTo(sparkle, {
+                    scale: 0,
+                    opacity: 1
+                }, {
+                    scale: Math.random() * 3 + 1,
+                    opacity: 0,
+                    duration: Math.random() * 2 + 1,
+                    ease: 'power2.out',
+                    onComplete: () => sparkle.remove()
+                });
+            }
+        }
+        
+        // GSAP Animation timeline
+        const tl = gsap.timeline();
+        
+        tl.to('#loveCard', {
+            y: 0,
+            opacity: 1,
+            duration: 2,
+            ease: 'power3.out'
+        })
+        .to('#msg1', {
+            y: 0,
+            opacity: 1,
+            duration: 1.5,
+            ease: 'power2.out'
+        }, '-=1')
+        .to('#btn1', {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'back.out(1.7)'
+        }, '-=0.5');
+        
+        // Interactive buttons
+        let step = 0;
+        
+        document.getElementById('btn1').addEventListener('click', function() {
+            createMagicalEffect();
+            createSparkles();
+            
+            gsap.to('#msg1, #btn1', { opacity: 0, duration: 0.8 });
+            
+            setTimeout(() => {
+                document.getElementById('msg2').classList.remove('hidden');
+                document.getElementById('btn2').classList.remove('hidden');
+                
+                gsap.fromTo('#msg2', 
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 1.5, ease: 'power2.out' }
+                );
+                gsap.fromTo('#btn2', 
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 1, delay: 0.5, ease: 'back.out(1.7)' }
+                );
+            }, 800);
+        });
+        
+        document.getElementById('btn2').addEventListener('click', function() {
+            createMagicalEffect();
+            
+            gsap.to('#msg2, #btn2', { opacity: 0, duration: 0.8 });
+            
+            setTimeout(() => {
+                document.getElementById('msg3').classList.remove('hidden');
+                document.getElementById('countdownContainer').classList.remove('hidden');
+                
+                gsap.fromTo('#msg3', 
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 1.5, ease: 'power2.out' }
+                );
+                
+                gsap.fromTo('#countdownContainer', 
+                    { opacity: 0, scale: 0.8 },
+                    { opacity: 1, scale: 1, duration: 1.2, ease: 'back.out(1.7)' }
+                );
+                
+                // Romantic countdown
+                let count = 5;
+                const countdownEl = document.getElementById('countdown');
+                
+                const heartMessages = [
+                    "Aku sayang kamu dalam 5 detik... 💕",
+                    "Kamu yang tercantik di dunia... 4 💖",
+                    "Aku ga bisa hidup tanpa kamu... 3 💝",
+                    "Please jangan marah lagi... 2 💘",
+                    "I LOVE YOU SO MUCH... 1 ❤️"
+                ];
+                
+                const timer = setInterval(() => {
+                    if (count > 0) {
+                        countdownEl.innerHTML = heartMessages[5-count];
+                        count--;
+                    } else {
+                        clearInterval(timer);
+                        countdownEl.innerHTML = "AKU CINTA KAMU SELAMANYA! 👸💖";
+                        
+                        setTimeout(() => {
+                            document.getElementById('btn3').classList.remove('hidden');
+                            gsap.fromTo('#btn3', 
+                                { opacity: 0, y: 30, scale: 0.8 },
+                                { opacity: 1, y: 0, scale: 1, duration: 1.5, ease: 'back.out(1.7)' }
+                            );
+                        }, 1500);
+                    }
+                }, 1500);
+            }, 800);
+        });
+        
+        document.getElementById('btn3').addEventListener('click', function() {
+            createMagicalEffect();
+            createSparkles();
+            
+            gsap.to('#msg3, #countdownContainer, #btn3', { opacity: 0, duration: 1 });
+            
+            setTimeout(() => {
+                document.getElementById('msg4').classList.remove('hidden');
+                document.getElementById('loveLetter').classList.remove('hidden');
+                
+                gsap.fromTo('#msg4', 
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 1.5, ease: 'power2.out' }
+                );
+                
+                gsap.fromTo('#loveLetter', 
+                    { opacity: 0, scale: 0.9, y: 50 },
+                    { opacity: 1, scale: 1, y: 0, duration: 2, ease: 'power3.out', delay: 0.5 }
+                );
+                
+                setTimeout(() => {
+                    document.getElementById('promiseBox').style.opacity = '1';
+                    document.getElementById('promiseBox').style.transform = 'translateY(0)';
+                    
+                    gsap.fromTo('#promiseBox', 
+                        { opacity: 0, y: 20 },
+                        { opacity: 1, y: 0, duration: 1.5, ease: 'power2.out' }
+                    );
+                }, 1500);
+                
+                setTimeout(() => {
+                    document.getElementById('finalMessage').classList.remove('hidden');
+                    gsap.fromTo('#finalMessage', 
+                        { opacity: 0, scale: 0.8 },
+                        { opacity: 1, scale: 1, duration: 2, ease: 'back.out(1.7)' }
+                    );
+                    
+                    // Grand finale explosion
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            createMagicalEffect();
+                            createSparkles();
+                        }, i * 1000);
+                    }
+                }, 3000);
+            }, 1000);
+        });
+        
+        // Responsive
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Auto magical effects
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                createSparkles();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
